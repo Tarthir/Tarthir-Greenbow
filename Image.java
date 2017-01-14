@@ -2,7 +2,7 @@
  * Created by tyler on 1/11/2017.
  */
 
-public class Image extends ImageEditor {
+public class Image {
     public Image(){}
     public Image(int height, int width){
         numOfCols = width;

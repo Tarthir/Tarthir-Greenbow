@@ -21,6 +21,7 @@ public class ImageEditor {
         try {
             scan = new Scanner(file).useDelimiter("((#[^\\n]*\\n)|(\\s+))+");
         }catch(FileNotFoundException e){System.out.println("No Such File Name! Exiting Program"); return false;}
+
         scan.next();//grabs the P3
         width = scan.nextInt();//grabs the width
         height = scan.nextInt();//grabs the height
@@ -33,9 +34,9 @@ public class ImageEditor {
         //create our pixel objects and put them in our image
         for (int i = 0; i < numOfPixels; i++) {
             int red = 0, green = 0, blue = 0;
-            if(scan.hasNextInt()){red = scan.nextInt();} else{break;}
-            if(scan.hasNextInt()){green = scan.nextInt();} else{break;}
-            if(scan.hasNextInt()){blue = scan.nextInt();} else{break;}
+            red = scan.nextInt();
+            green = scan.nextInt();
+            blue = scan.nextInt();
             Pixel p = new Pixel(red,green, blue);
             picture.push_back(p);
         }
@@ -83,23 +84,16 @@ public class ImageEditor {
             PrintWriter writer = new PrintWriter(outFile);
             StringBuilder output = new StringBuilder();
             Pixel[][] arr = newPic.getImage();
-            output.append("P3 " + colLength + " " + rowLength + " " + 255 + "\n");
+            output.append("P3 " + colLength + " " + rowLength + " " + 255 + " ");
             for(int i = 0; i < rowLength; i++){
                 for(int j = 0; j < colLength; j++){
-                    if(j < colLength - 1){
-                        output.append(arr[i][j].getRed() + " ");
-                        output.append(arr[i][j].getGreen() + " ");
-                        output.append(arr[i][j].getBlue() + " ");
-                    }
-                    else{//if we are at the last pixel
-                        output.append(arr[i][j].getRed() + " ");
-                        output.append(arr[i][j].getGreen() + " ");
-                        output.append(arr[i][j].getBlue());
-                    }
+                    output.append(arr[i][j].getRed() + " ");
+                    output.append(arr[i][j].getGreen() + " ");
+                    output.append(arr[i][j].getBlue() + " ");
                 }
-                output.append("\n");//newline after every row
             }
             writer.print(output.toString());
+            writer.close();
         }catch(Exception e){System.out.println(e.getMessage().toString()); return false;}
         return true;
     }
@@ -159,7 +153,7 @@ public class ImageEditor {
     void invertColors(Image newPic){
         Pixel[][] arr = newPic.getImage();//get the image array
         for(int i = 0; i < rowLength; i++){
-            for(int j = 0; j < colLength; j++){//goes through every pixel and inverts the RBG values
+            for(int j = 0; j < colLength; j++){//goes through every pixel and inverts the RGB values
                 arr[i][j].setRed(inverter(arr[i][j].getRed()));
                 arr[i][j].setGreen(inverter(arr[i][j].getGreen()));;
                 arr[i][j].setBlue(inverter(arr[i][j].getBlue()));
@@ -175,8 +169,8 @@ public class ImageEditor {
         //goes through every pixel and blurs the image
         for(int i = 0; i < rowLength; i++) {
             for (int j = 0; j < colLength; j++) {
-                int redAvg = 0, blueAvg = 0, greenAvg = 0, edger = 0;//when at edge, edger subtracts  out of bounds positions from divisor "j-edger"
-                for(int k = 0; k < blurLength; k++){//averages from k to blurlength-1
+                int k,redAvg = 0, blueAvg = 0, greenAvg = 0, edger = 0;//when at edge, edger subtracts  out of bounds positions from divisor "k-edger"
+                for(k = 0; k < blurLength; k++){//averages from k to blurlength-1
                     if(!((j + k) >= colLength)) {//if our column number plus the given k, is not greater then our width
                         redAvg += arr[i][j + k].getRed();
                         greenAvg += arr[i][j + k].getGreen();
@@ -186,7 +180,7 @@ public class ImageEditor {
                         edger++;
                     }
                 }
-                int divisor = j - edger;//gets our divisor
+                int divisor = k - edger;//gets our divisor
                 if(divisor <= 0){divisor = 1;}//set to one so we don't do division by zero or by negative numbers
                 arr[i][j].setRed( (redAvg / divisor) );
                 arr[i][j].setGreen( (greenAvg / divisor) );

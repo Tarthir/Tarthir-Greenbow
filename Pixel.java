@@ -2,9 +2,9 @@
  * Created by tyler on 1/11/2017.
  */
 
-public class Pixel extends Image {
+public class Pixel{
     public Pixel(){}
-    public Pixel(int red,int blue,int green){
+    public Pixel(int red,int green,int blue){
        setRed(red);
        setBlue(blue);
        setGreen(green);
@@ -27,7 +27,8 @@ public class Pixel extends Image {
     void setGreen(int green){
         this.green = green;
     }
+
     private int red;
-    private int blue;
     private int green;
+    private int blue;
 }
