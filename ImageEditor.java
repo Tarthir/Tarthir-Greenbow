@@ -42,14 +42,12 @@ public class ImageEditor {
         }
         scan.close();
 
-        Image newPic = new Image();
-        newPic = picture;//make a copy to play with
-        if(beginEditing(args, newPic)) {//if no errors
+        if(beginEditing(args, picture)) {//if no errors
             File outFile = new File(outputFileName);
-            if (outputPicture(newPic,outFile)) {
+            if (outputPicture(picture,outFile)) {
                 return true;//picture created
             }
-            else{return false;}
+            else{System.out.println("Picture not created, failure.");return false;}
         }
         return false;
     }
@@ -105,9 +103,10 @@ public class ImageEditor {
         int greenDif =  arr[i][j].getGreen() - arr[i-1][j-1].getGreen();
         int blueDif = arr[i][j].getBlue() - arr[i-1][j-1].getBlue();
         //see where the greatest difference lies
-        maxDif = Math.max(Math.abs(redDif), Math.abs(maxDif));
-        maxDif = Math.max(Math.abs(greenDif), Math.abs(maxDif));
-        maxDif = Math.max(Math.abs(blueDif), Math.abs(maxDif));
+        if(Math.abs(redDif) > Math.abs(maxDif)){maxDif = redDif;}
+        if(Math.abs(redDif) > Math.abs(maxDif)){maxDif = redDif;}
+        if(Math.abs(greenDif) > Math.abs(maxDif)){maxDif = greenDif;}
+        if(Math.abs(blueDif) > Math.abs(maxDif)){maxDif = blueDif;}
         if((i == rowLength - 1 || j == colLength - 1) && maxDif < 0){//edge case, is this where we need to check? is are we checking the differences?
             return 128;
         }
