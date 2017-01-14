@@ -104,20 +104,15 @@ public class ImageEditor {
         int blueDif = arr[i][j].getBlue() - arr[i-1][j-1].getBlue();
         //see where the greatest difference lies
         if(Math.abs(redDif) > Math.abs(maxDif)){maxDif = redDif;}
-        if(Math.abs(redDif) > Math.abs(maxDif)){maxDif = redDif;}
         if(Math.abs(greenDif) > Math.abs(maxDif)){maxDif = greenDif;}
         if(Math.abs(blueDif) > Math.abs(maxDif)){maxDif = blueDif;}
-        if((i == rowLength - 1 || j == colLength - 1) && maxDif < 0){//edge case, is this where we need to check? is are we checking the differences?
-            return 128;
+        num = maxDif + 128;
+        //check boundaries
+        if (num < 0) {
+            return 0;
         }
-        else {
-            num = maxDif + 128;
-            //check boundaries
-            if (num < 0) {
-                return 0;
-            } else if (num > 255) {
-                return 255;
-            }
+        else if (num > 255) {
+            return 255;
         }
         return num;
     }
