@@ -1,0 +1,215 @@
+/**
+ * Created by tyler on 1/11/2017.
+ */
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.File;
+import java.io.PrintWriter;
+
+public class ImageEditor {
+    public static void main(String[] args){
+        ImageEditor ie = new ImageEditor();
+        String inputFileName = args[0];
+        String outputFileName = args[1];
+        ie.createPicture(inputFileName,outputFileName,args);
+    }
+    //where we create create a 2D array of class Image made up of Class Pixel
+    boolean createPicture(String inputFileName, String outputFileName, String[] args){
+        int height,width;
+        Scanner scan;
+        File file = new File(inputFileName);
+        try {
+            scan = new Scanner(file).useDelimiter("((#[^\\n]*\\n)|(\\s+))+");
+        }catch(FileNotFoundException e){System.out.println("No Such File Name! Exiting Program"); return false;}
+        scan.next();//grabs the P3
+        width = scan.nextInt();//grabs the width
+        height = scan.nextInt();//grabs the height
+        int numOfPixels = width * height;
+        Image picture = new Image(height, width);
+        rowLength = picture.getNumOfRows();//initialize class variables
+        colLength = picture.getNumOfCols();
+        scan.nextInt();//get rid of maximum value of colors, dont need to store
+
+        //create our pixel objects and put them in our image
+        for (int i = 0; i < numOfPixels; i++) {
+            int red = 0, green = 0, blue = 0;
+            if(scan.hasNextInt()){red = scan.nextInt();} else{break;}
+            if(scan.hasNextInt()){green = scan.nextInt();} else{break;}
+            if(scan.hasNextInt()){blue = scan.nextInt();} else{break;}
+            Pixel p = new Pixel(red,green, blue);
+            picture.push_back(p);
+        }
+        scan.close();
+
+        Image newPic = new Image();
+        newPic = picture;//make a copy to play with
+        if(beginEditing(args, newPic)) {//if no errors
+            File outFile = new File(outputFileName);
+            if (outputPicture(newPic,outFile)) {
+                return true;//picture created
+            }
+            else{return false;}
+        }
+        return false;
+    }
+
+    boolean beginEditing(String[] args,Image newPic){
+        String input = args[2].toLowerCase();
+        switch(input){
+            case"grayscale":
+                grayScale(newPic);
+                break;
+            case"emboss":
+                emboss(newPic);
+                break;
+            case"invert":
+                invertColors(newPic);
+                break;
+            case"motionblur":
+                int num;
+                try {
+                    num = Integer.parseInt(args[3]);
+                    motionBlur(num, newPic);
+                } catch(IndexOutOfBoundsException  e){System.out.println("No blur length Parameter given!"); return false;}
+                break;
+            default:
+                System.out.println("No/Incorrect Parameter!");
+                return false;
+        }
+        return true;
+    }
+    boolean outputPicture(Image newPic, File outFile){
+        try {
+            PrintWriter writer = new PrintWriter(outFile);
+            StringBuilder output = new StringBuilder();
+            Pixel[][] arr = newPic.getImage();
+            output.append("P3 " + colLength + " " + rowLength + " " + 255 + "\n");
+            for(int i = 0; i < rowLength; i++){
+                for(int j = 0; j < colLength; j++){
+                    if(j < colLength - 1){
+                        output.append(arr[i][j].getRed() + " ");
+                        output.append(arr[i][j].getGreen() + " ");
+                        output.append(arr[i][j].getBlue() + " ");
+                    }
+                    else{//if we are at the last pixel
+                        output.append(arr[i][j].getRed() + " ");
+                        output.append(arr[i][j].getGreen() + " ");
+                        output.append(arr[i][j].getBlue());
+                    }
+                }
+                output.append("\n");//newline after every row
+            }
+            writer.print(output.toString());
+        }catch(Exception e){System.out.println(e.getMessage().toString()); return false;}
+        return true;
+    }
+
+    int getDifference(Pixel[][] arr, int i, int j){
+        int maxDif = 0;
+        int num = 0;
+        int redDif = arr[i][j].getRed() - arr[i-1][j-1].getRed();
+        int greenDif =  arr[i][j].getGreen() - arr[i-1][j-1].getGreen();
+        int blueDif = arr[i][j].getBlue() - arr[i-1][j-1].getBlue();
+        //see where the greatest difference lies
+        maxDif = Math.max(Math.abs(redDif), Math.abs(maxDif));
+        maxDif = Math.max(Math.abs(greenDif), Math.abs(maxDif));
+        maxDif = Math.max(Math.abs(blueDif), Math.abs(maxDif));
+        if((i == rowLength - 1 || j == colLength - 1) && maxDif < 0){//edge case, is this where we need to check? is are we checking the differences?
+            return 128;
+        }
+        else {
+            num = maxDif + 128;
+            //check boundaries
+            if (num < 0) {
+                return 0;
+            } else if (num > 255) {
+                return 255;
+            }
+        }
+        return num;
+    }
+    //Here we wll do the embossing
+    void emboss(Image newPic){
+        Pixel[][] arr = newPic.getImage();//get the image array
+        for(int i = rowLength - 1; i >= 0; i--) {
+            for (int j = colLength - 1; j >= 0; j--) {//goes through every pixel and embosses the image
+                if(i == 0 || j == 0 ){
+                    arr[i][j].setRed(128);
+                    arr[i][j].setGreen(128);
+                    arr[i][j].setBlue(128);
+                }
+                else{
+                    int v = getDifference(arr,i,j);
+                    //emboss the image
+                    arr[i][j].setRed(v);
+                    arr[i][j].setGreen(v);
+                    arr[i][j].setBlue(v);
+                }
+            }
+        }
+        newPic.setImage(arr);
+    }
+    //helper method for invertColors which inverts numbers
+    int inverter(int num){
+        int newNum = 255 - num;
+        return newNum;
+    }
+
+    //Here we will invert the colors
+    void invertColors(Image newPic){
+        Pixel[][] arr = newPic.getImage();//get the image array
+        for(int i = 0; i < rowLength; i++){
+            for(int j = 0; j < colLength; j++){//goes through every pixel and inverts the RBG values
+                arr[i][j].setRed(inverter(arr[i][j].getRed()));
+                arr[i][j].setGreen(inverter(arr[i][j].getGreen()));;
+                arr[i][j].setBlue(inverter(arr[i][j].getBlue()));
+            }
+        }
+        newPic.setImage(arr);
+    }
+
+    //The value of each color of each pixel is the average of that
+    //color value for n pixels (from the current pixel to n-1) horizontally
+    void motionBlur(int blurLength,Image newPic){
+        Pixel[][] arr = newPic.getImage();//get the image array
+        //goes through every pixel and blurs the image
+        for(int i = 0; i < rowLength; i++) {
+            for (int j = 0; j < colLength; j++) {
+                int redAvg = 0, blueAvg = 0, greenAvg = 0, edger = 0;//when at edge, edger subtracts  out of bounds positions from divisor "j-edger"
+                for(int k = 0; k < blurLength; k++){//averages from k to blurlength-1
+                    if(!((j + k) >= colLength)) {//if our column number plus the given k, is not greater then our width
+                        redAvg += arr[i][j + k].getRed();
+                        greenAvg += arr[i][j + k].getGreen();
+                        blueAvg += arr[i][j + k].getBlue();
+                    }
+                    else{//skip out of bounds numbers
+                        edger++;
+                    }
+                }
+                int divisor = j - edger;//gets our divisor
+                if(divisor <= 0){divisor = 1;}//set to one so we don't do division by zero or by negative numbers
+                arr[i][j].setRed( (redAvg / divisor) );
+                arr[i][j].setGreen( (greenAvg / divisor) );
+                arr[i][j].setBlue( (blueAvg / divisor) );
+            }
+        }
+        newPic.setImage(arr);
+    }
+
+    void grayScale(Image newPic){
+        Pixel[][] arr = newPic.getImage();//get the image array
+        for(int i = 0; i < rowLength; i++){
+            for(int j = 0; j < colLength; j++){//goes through every pixel and inverts the RBG values
+                int sum = arr[i][j].getBlue() + arr[i][j].getRed() + arr[i][j].getGreen();
+                int average = sum / 3;
+                arr[i][j].setRed(average);
+                arr[i][j].setBlue(average);
+                arr[i][j].setGreen(average);
+            }
+        }
+        newPic.setImage(arr);
+    }
+
+    private int rowLength;
+    private int colLength;
+}
