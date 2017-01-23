@@ -10,7 +10,7 @@ public class Trie implements ITrie {
     private TreeSet<String> words;
     private INode root;
 
-    Trie(){
+    public Trie(){
         root = new INode();
         nodeCount = 1;//including the root
         wordCount = 0;

@@ -13,7 +13,7 @@ public class SpellCorrector implements ISpellCorrector {
     private Trie trie;
     private Trie trie2;
 
-    SpellCorrector(){   }
+    public SpellCorrector(){   }
     /**
      * Tells this <code>ISpellCorrector</code> to use the given file as its dictionary
      * for generating suggestions.
@@ -104,7 +104,7 @@ public class SpellCorrector implements ISpellCorrector {
                 int freqCount = node.getValue();//grab its frequency
                 int currNodeLength = str.length();
                 //check its freq against our currMaxfreq and if this word is within the right edit distance
-                if (freqCount > maxFreq && (currNodeLength + count == inputLength || currNodeLength - count == inputLength || currNodeLength == inputLength)) {
+                if (freqCount > maxFreq && (inputLength <= currNodeLength + count && inputLength >= currNodeLength - count)) {
                     maxFreq = node.getValue();
                     suggestedWord = str;
                 }
@@ -129,6 +129,9 @@ public class SpellCorrector implements ISpellCorrector {
                 set.add(str);
             }
         }
+        //if(set.contains("yea")){
+        //    System.out.println("Got Yea");
+       // }
         return set;
     }
     private TreeSet<String> alterationDistance(String inputWord, TreeSet<String> set){
