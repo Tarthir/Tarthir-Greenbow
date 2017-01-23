@@ -143,7 +143,7 @@ public class Trie implements ITrie {
 
     @Override
     public int hashCode(){
-        return this.nodeCount * this.wordCount + (root.hashCode() * words.hashCode());
+        return this.nodeCount * this.wordCount * 31;
     }
 
     @Override
