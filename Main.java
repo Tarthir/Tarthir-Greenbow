@@ -68,7 +68,7 @@ public class Main{
         System.out.println("Word: " + printWord(wordSet,alreadyGuessed));
         System.out.println("Enter Guess: ");
         String guessInput = scan.nextLine();
-        return guessInput;
+        return guessInput.toLowerCase();
     }
     //returns a string which contains all the characters already used
     private String getAlreadyUsed(TreeSet<String> alreadyGuessed){
