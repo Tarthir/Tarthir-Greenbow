@@ -1,0 +1,4 @@
+aah
+yaa
+aha
+#tests rightmost function

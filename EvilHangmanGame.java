@@ -2,14 +2,12 @@ package hangman;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.lang.String;
 
@@ -72,7 +70,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
 
     }
 
-
     /**
      * Make a guess in the current game.
      *
@@ -89,7 +86,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         String strGuess = "";
         strGuess += guess;
         if(alreadyGuessed.contains(strGuess)){ throw new GuessAlreadyMadeException();}
-        alreadyGuessed.add(strGuess);
         return partitionSet(strGuess);
 
     }
@@ -100,21 +96,36 @@ public class EvilHangmanGame implements IEvilHangmanGame {
      * */
     private Set<String> partitionSet(String guess){
         HashMap<String,Set<String>> subSets = new HashMap<>();
-        ArrayList<String> patterns = new ArrayList<>();
+       // ArrayList<String> patterns = new ArrayList<>();
         for(String str : dictSubset){
-            String pattern = makePattern(str,guess.charAt(0));
-            if(subSets.containsKey(pattern)){
-                subSets.get(pattern).add(str);
-            }
-            else{
-                Set<String> sets = new TreeSet<>();
-                sets.add(str);
-                subSets.put(pattern, sets);
-                patterns.add(pattern);
-            }
+           // if(!containsAlreadyGuessed(str,alreadyGuessed)) {
+                String pattern = makePattern(str, guess.charAt(0));
+                if (subSets.containsKey(pattern)) {
+                    subSets.get(pattern).add(str);
+                }
+                else {
+                    Set<String> sets = new TreeSet<>();
+                    sets.add(str);
+                    subSets.put(pattern, sets);
+                    //patterns.add(pattern);
+                }
+           // }
         }
+        alreadyGuessed.add(guess);
         return chooseSet(subSets,guess);
     }
+    /**
+     * Checks to see if a given string contains a char which has already been guessed
+     *
+     * */
+  /*  private boolean containsAlreadyGuessed(String input, Set<String> alreadyGuessed){
+        for(String str : alreadyGuessed){
+            if(input.contains(str)){
+                return true;
+            }
+        }
+        return false;
+    }*/
 
     /**
      *This adds words to a given set according to the how many instances of a given letter there are
@@ -155,7 +166,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             }
         }
         String largestKey = getLargest(subSets, size);
-        if(largestKey != ""){return subSets.get(largestKey);}
+        if(largestKey != ""){return dictSubset = subSets.get(largestKey);}
         //#2: the letter does not appear
         set = subSets.entrySet();
         itr = set.iterator();
@@ -163,7 +174,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             Map.Entry sub2 = (Map.Entry)itr.next();
             String key =  sub2.getKey().toString();
             if(!key.contains(guess)){
-                return (Set<String>) sub2.getValue();
+                return dictSubset = (Set<String>) sub2.getValue();
             }
         }
         //#3: fewest letters
@@ -177,7 +188,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             if(charCount < counter){counter = charCount; key = sub3.getKey().toString();}//otherwise save the key of the set with the fewest # of letters
         }
         if(getFewestUnique(subSets,counter,guess.charAt(0))){return subSets.get(key);}//make sure there is only one set that has the fewest
-        return rightMostSet(subSets,guess.charAt(0));//#4
+        return  dictSubset = rightMostSet(subSets,guess.charAt(0));//#4
     }
 
     /**
@@ -193,11 +204,13 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         while(itr.hasNext()){
             Map.Entry sub = (Map.Entry)itr.next();
             Set<String> s = (Set<String>)sub.getValue();
-            if(s.size() > size){
-                size = s.size();
+            if(size == s.size() && count == 0){//there is at least one set with the same number of elements
+                count++;
                 largestKey = sub.getKey().toString();
             }
-            if(size == s.size()){count++;}//there are at least two sets with the same number of elements
+            else if(size == s.size() && count > 0){
+                count++;
+            }
         }
         if(count > 1){return "";}//return an empty string if size == s.size() > 1 times
         return largestKey;//else
@@ -226,28 +239,25 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     }
     //finds the set with the rightmost point of the guess char
     private Set<String> rightMostSet(HashMap<String,Set<String>> subSets,char guess) {
+        Set set = subSets.entrySet();
+        Iterator itr = set.iterator();
+        LinkedList<String> keys = new LinkedList<>();
         int loopCount = 1, count = 0;
-        String returnKey = "";
-        HashMap<String,Set<String>> newSubSets = new HashMap<>();
-        while (count != 1) {
-            newSubSets = new HashMap<>();//reset
-            count = 0;
-            Set set = subSets.entrySet();
-            Iterator itr = set.iterator();
-
-            while (itr.hasNext()) {
-                Map.Entry sub = (Map.Entry) itr.next();
-                String str = sub.getKey().toString();
-                //find the right most and decrement continually until down to one set
-                if (str.lastIndexOf(guess, str.length() - loopCount) == str.length() - loopCount){
-                    count++;
-                    newSubSets.put(str,subSets.get(str));
-                    returnKey = str;
-                }
-                return set;
-            }
-            loopCount++;
+        String key = "";
+        while(itr.hasNext()){//grab all the keys
+            Map.Entry sub = (Map.Entry)itr.next();
+            keys.add(sub.getKey().toString());
         }
-        return newSubSets.get(returnKey);
+        itr = keys.listIterator();
+        while(itr.hasNext()){//find the rightmost of the keys
+            String str = itr.next().toString();
+            if (str.lastIndexOf(guess, str.length() - loopCount) == str.length() - loopCount){
+                key = str;
+                count++;
+            }
+            else{keys.remove(str); itr = keys.listIterator(); count = 0; continue;}//remove the String that is not rightmost and reset
+            if(str.equals(keys.getLast()) && count != 1){loopCount++; itr = keys.listIterator(); count = 0; continue;}//reset
+        }
+        return subSets.get(key);
     }
 }
