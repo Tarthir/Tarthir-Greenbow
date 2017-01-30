@@ -166,7 +166,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             }
         }
         String largestKey = getLargest(subSets, size);
-        if(largestKey != ""){return dictSubset = subSets.get(largestKey);}
+        if(largestKey != ""){return (dictSubset = subSets.get(largestKey));}
         //#2: the letter does not appear
         set = subSets.entrySet();
         itr = set.iterator();
@@ -174,7 +174,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             Map.Entry sub2 = (Map.Entry)itr.next();
             String key =  sub2.getKey().toString();
             if(!key.contains(guess)){
-                return dictSubset = (Set<String>) sub2.getValue();
+                return (dictSubset = (Set<String>) sub2.getValue());
             }
         }
         //#3: fewest letters
@@ -187,8 +187,8 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             int charCount = charCounter(sub3.getKey().toString().toCharArray(), guess.charAt(0));
             if(charCount < counter){counter = charCount; key = sub3.getKey().toString();}//otherwise save the key of the set with the fewest # of letters
         }
-        if(getFewestUnique(subSets,counter,guess.charAt(0))){return subSets.get(key);}//make sure there is only one set that has the fewest
-        return  dictSubset = rightMostSet(subSets,guess.charAt(0));//#4
+        if(getFewestUnique(subSets,counter,guess.charAt(0))){return (dictSubset = subSets.get(key));}//make sure there is only one set that has the fewest
+        return  (dictSubset = (rightMostSet(subSets,guess.charAt(0))));//#4
     }
 
     /**
