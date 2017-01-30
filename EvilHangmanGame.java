@@ -39,6 +39,9 @@ public class EvilHangmanGame implements IEvilHangmanGame {
      */
     public void startGame(File dictionary, int wordLength) {//added a parameter to this function
         // what if word length is 1000? Where do i get my guesses from?
+        if(dictSubset.size() != 0){dictSubset.clear();}//reset if needed
+        if(alreadyGuessed.size() != 0){alreadyGuessed.clear();}
+
         Scanner scan;
         lengthOfWords = wordLength;
         if (wordLength < 2) {
