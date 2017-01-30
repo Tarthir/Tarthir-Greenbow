@@ -19,7 +19,9 @@ public class Main{
         m.lengthOfWords = Integer.parseInt(args[1]);
         int numGuesses = Integer.parseInt(args[2]);
         File file = new File(dictionary);
-        game.startGame(file,m.lengthOfWords);
+        try {
+            game.startGame(file, m.lengthOfWords);
+        }catch (IllegalArgumentException e){return;}
         m.prompter(numGuesses, game,scan);
         scan.close();
     }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -21,7 +22,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
     private Set<String> dictSubset;
     private int lengthOfWords;
     private Set<String> alreadyGuessed;
-    EvilHangmanGame(){
+    public EvilHangmanGame(){
         dictSubset = new TreeSet<String>();
         alreadyGuessed = new TreeSet<>();
     }
@@ -70,7 +71,10 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             e.printStackTrace();
             return;
         }
-
+        if(dictSubset.size() == 0){
+            System.out.println("Invalid input, No words in dictionary from given parameters");
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
@@ -117,18 +121,6 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         alreadyGuessed.add(guess);
         return chooseSet(subSets,guess);
     }
-    /**
-     * Checks to see if a given string contains a char which has already been guessed
-     *
-     * */
-  /*  private boolean containsAlreadyGuessed(String input, Set<String> alreadyGuessed){
-        for(String str : alreadyGuessed){
-            if(input.contains(str)){
-                return true;
-            }
-        }
-        return false;
-    }*/
 
     /**
      *This adds words to a given set according to the how many instances of a given letter there are
@@ -170,6 +162,7 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         }
         String largestKey = getLargest(subSets, size);
         if(largestKey != ""){return (dictSubset = subSets.get(largestKey));}
+
         //#2: the letter does not appear
         set = subSets.entrySet();
         itr = set.iterator();
@@ -190,8 +183,12 @@ public class EvilHangmanGame implements IEvilHangmanGame {
             int charCount = charCounter(sub3.getKey().toString().toCharArray(), guess.charAt(0));
             if(charCount < counter){counter = charCount; key = sub3.getKey().toString();}//otherwise save the key of the set with the fewest # of letters
         }
-        if(getFewestUnique(subSets,counter,guess.charAt(0))){return (dictSubset = subSets.get(key));}//make sure there is only one set that has the fewest
-        return  (dictSubset = (rightMostSet(subSets,guess.charAt(0))));//#4
+        LinkedList<String> keys = new LinkedList<>();
+        keys = getFewestUnique(subSets,counter,guess.charAt(0));
+        if(keys.size() == 1){return (dictSubset = subSets.get(key));}//make sure there is only one set that has the fewest
+        //PROBLEM: THE SET BEING SEARCHED FOR STEP 4 NEEDS TO EXCLUDE THOSE NOT TRUE IN STEP 3
+        int loopCount = 1;
+        return  (dictSubset = (rightMostSet(subSets,guess.charAt(0),keys,loopCount)));//#4
     }
 
     /**
@@ -218,17 +215,18 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         if(count > 1){return "";}//return an empty string if size == s.size() > 1 times
         return largestKey;//else
     }
+
     //makes sure we have only one set that has the lowest amount of 'guess' chars in it
-    private boolean getFewestUnique(HashMap<String,Set<String>> subSets,int counter, char guess){
+    private LinkedList<String> getFewestUnique(HashMap<String,Set<String>> subSets,int counter, char guess){
         Set set = subSets.entrySet();
         Iterator itr = set.iterator();
-        int count = 0;//how many sets have the minimun number of 'guess' chars
+        LinkedList<String> keys = new LinkedList<>();
         while(itr.hasNext()){
             Map.Entry sub3 = (Map.Entry) itr.next();
             int charCount = charCounter(sub3.getKey().toString().toCharArray(), guess);
-            if(counter == charCount){count++;}//otherwise save the key of the set with the fewest # of letters
+            if(counter == charCount){keys.add(sub3.getKey().toString());}//otherwise save the key of the set with the fewest # of letters
         }
-        return (count == 1);
+        return keys;
     }
     //Counts up the number of a given char in a char array
     private int charCounter(char[] cArr, char guess){
@@ -240,27 +238,22 @@ public class EvilHangmanGame implements IEvilHangmanGame {
         }
         return counter;
     }
+
     //finds the set with the rightmost point of the guess char
-    private Set<String> rightMostSet(HashMap<String,Set<String>> subSets,char guess) {
-        Set set = subSets.entrySet();
-        Iterator itr = set.iterator();
-        LinkedList<String> keys = new LinkedList<>();
-        int loopCount = 1, count = 0;
-        String key = "";
-        while(itr.hasNext()){//grab all the keys
-            Map.Entry sub = (Map.Entry)itr.next();
-            keys.add(sub.getKey().toString());
-        }
-        itr = keys.listIterator();
+    private Set<String> rightMostSet(HashMap<String,Set<String>> subSets,char guess,LinkedList<String> keys, int loopCount) {
+        if(keys.size() == 1){return subSets.get(keys.getFirst());}//base case
+        ListIterator itr = keys.listIterator();
+        LinkedList<String> newKeys = new LinkedList<>();
+        int count = 0;
         while(itr.hasNext()){//find the rightmost of the keys
             String str = itr.next().toString();
             if (str.lastIndexOf(guess, str.length() - loopCount) == str.length() - loopCount){
-                key = str;
+                newKeys.add(str);
                 count++;
             }
-            else{keys.remove(str); itr = keys.listIterator(); count = 0; continue;}//remove the String that is not rightmost and reset
-            if(str.equals(keys.getLast()) && count != 1){loopCount++; itr = keys.listIterator(); count = 0; continue;}//reset
         }
-        return subSets.get(key);
+        if(count >= 1){keys = newKeys;}
+        loopCount++;
+        return rightMostSet(subSets,guess,keys,loopCount);
     }
 }
