@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-import handler.functionObjects.LoginRequest;
+import infoObjects.LoginRequest;
 
 /**
  * Created by tyler on 2/13/2017.

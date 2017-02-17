@@ -9,25 +9,25 @@ create table user(
 );
 
 create table belongsTo (
-    userID integer not null,
-    personID integer not null
+    userID text not null,
+    personID text not null
 );
 
 create table person (
     personID text not null primary key,
     firstName text not null,
     lastName text not null,
-    father integer,
-    mother integer,
-    spouse integer
+    father text,
+    mother text,
+    spouse text
 );
 
 create table location(
     locationID text not null primary key,
     city text not null,
-    latitude integer not null,
-    longitude integer not null,
-    country text not null,
+    latitude text not null,
+    longitude text not null,
+    country text not null
 );
 
 create table tookPlaceAt(
@@ -48,6 +48,7 @@ create table userEvent (
 );
 
 create table authToken(
-    authToken text not null,
+    authToken text not null primary key,
     userID text not null
 );
+

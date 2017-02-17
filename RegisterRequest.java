@@ -6,12 +6,18 @@ package infoObjects;
  */
 
 public class RegisterRequest {
-    private String userName; /** Non-empty string*/
-    private String passWord; /** Non-empty string*/
-    private String email;  /** Non-empty string*/
-    private String fName;  /** Non-empty string*/
-    private String lName;  /** Non-empty string*/
-    private String gender; /** “f” or “m”*/
+    /** Non-empty string*/
+    private String userName;
+    /** Non-empty string*/
+    private String passWord;
+    /** Non-empty string*/
+    private String email;
+    /** Non-empty string*/
+    private String fName;
+    /** Non-empty string*/
+    private String lName;
+    /** f or m*/
+    private String gender;
 
     public RegisterRequest(String userName, String passWord, String email, String fName, String lName, String gender) {
         this.userName = userName;

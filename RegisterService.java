@@ -1,7 +1,7 @@
 package service;
 
-import handler.functionObjects.RegisterRequest;
-import handler.functionObjects.RegisterResult;
+import infoObjects.RegisterRequest;
+import infoObjects.RegisterResult;
 
 /**
  * Created by tyler on 2/14/2017.

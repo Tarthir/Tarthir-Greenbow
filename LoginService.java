@@ -1,7 +1,7 @@
 package service;
 
-import handler.functionObjects.LoginRequest;
-import handler.functionObjects.LoginResult;
+import infoObjects.LoginRequest;
+import infoObjects.LoginResult;
 
 /**
  * Created by tyler on 2/14/2017.

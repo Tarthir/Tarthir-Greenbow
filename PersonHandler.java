@@ -5,8 +5,8 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-import handler.functionObjects.PeopleRequest;
-import handler.functionObjects.PersonRequest;
+import infoObjects.PeopleRequest;
+import infoObjects.PersonRequest;
 
 /**
  * Created by tyler on 2/13/2017.

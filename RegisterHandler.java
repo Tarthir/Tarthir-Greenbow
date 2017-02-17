@@ -5,10 +5,11 @@ import com.sun.net.httpserver.HttpHandler;
 
 import java.io.IOException;
 
-import handler.functionObjects.RegisterRequest;
+import infoObjects.RegisterRequest;
 
 /**
  * Created by tyler on 2/13/2017.
+ * Handles requests to register users
  */
 
 public class RegisterHandler implements HttpHandler{

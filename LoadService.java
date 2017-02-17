@@ -1,7 +1,7 @@
 package service;
 
-import handler.functionObjects.LoadRequest;
-import handler.functionObjects.LoadResult;
+import infoObjects.LoadRequest;
+import infoObjects.LoadResult;
 
 /**
  * Created by tyler on 2/14/2017.

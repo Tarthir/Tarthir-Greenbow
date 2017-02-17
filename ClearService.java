@@ -1,6 +1,6 @@
 package service;
 
-import handler.functionObjects.ClearResult;
+import infoObjects.ClearResult;
 
 /**
  * Created by tyler on 2/14/2017.

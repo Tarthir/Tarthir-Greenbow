@@ -1,7 +1,7 @@
 package service;
 
-import handler.functionObjects.EventRequest;
-import handler.functionObjects.EventResult;
+import infoObjects.EventRequest;
+import infoObjects.EventResult;
 
 /**
  * Created by tyler on 2/14/2017.

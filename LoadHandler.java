@@ -2,7 +2,7 @@ package handler;
 
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
-import handler.functionObjects.LoadRequest;
+import infoObjects.LoadRequest;
 
 /**
  * Created by tyler on 2/14/2017.

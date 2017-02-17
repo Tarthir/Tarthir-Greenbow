@@ -12,7 +12,10 @@ public class ClearResult {
     public ClearResult(boolean clearedSuccessfully) {
         this.clearedSuccessfully = clearedSuccessfully;
     }
-    /**@RETURN Whether the database cleared successfuly or not*/
+    /**
+     * Whether the database cleared successfuly or not
+     * @RETURN Whether the database cleared successfuly or not
+     * */
     public boolean isClearedSuccessfully() {
         return clearedSuccessfully;
     }
